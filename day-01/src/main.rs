@@ -23,5 +23,13 @@ fn main() -> anyhow::Result<()> {
         .count();
     dbg!(&part2);
 
+    let part2_alt = input
+        .lines()
+        .filter(|l| !l.is_empty())
+        .map(|n| n.parse::<i64>().unwrap())
+        .tuple_windows()
+        .filter(|(a, _, _, d)| a < d)
+        .count();
+    dbg!(&part2_alt);
     Ok(())
 }
