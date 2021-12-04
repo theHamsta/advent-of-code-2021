@@ -7,7 +7,7 @@ fn main() -> anyhow::Result<()> {
     let part1 = input
         .lines()
         .filter(|l| !l.is_empty())
-        .map(|n| n.parse::<i64>().unwrap())
+        .flat_map(|n| n.parse::<i64>())
         .tuple_windows()
         .filter(|(a, b)| a < b)
         .count();
@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
     let part2_alt = input
         .lines()
         .filter(|l| !l.is_empty())
-        .map(|n| n.parse::<i64>().unwrap())
+        .flat_map(|n| n.parse::<i64>())
         .tuple_windows()
         .filter(|(a, _, _, d)| a < d)
         .count();

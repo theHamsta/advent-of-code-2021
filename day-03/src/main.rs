@@ -47,14 +47,10 @@ fn main() -> anyhow::Result<()> {
                 acc - 1
             }
         });
-        oxigen_numbers = oxigen_numbers
-            .iter()
-            .copied()
-            .filter(|&number| {
-                let bit_set = (number >> (num_bits - pos - 1)) & 1 == 1;
-                (bit_set && vote >= 0) || (!bit_set && vote < 0)
-            })
-            .collect::<Vec<_>>();
+        oxigen_numbers.retain(|&number| {
+            let bit_set = (number >> (num_bits - pos - 1)) & 1 == 1;
+            (bit_set && vote >= 0) || (!bit_set && vote < 0)
+        });
         if oxigen_numbers.len() == 1 {
             break;
         };
@@ -71,14 +67,10 @@ fn main() -> anyhow::Result<()> {
                 acc - 1
             }
         });
-        scuba_numbers = scuba_numbers
-            .iter()
-            .copied()
-            .filter(|&number| {
-                let bit_set = number >> (num_bits - pos - 1) & 1 == 1;
-                (bit_set && vote < 0) || (!bit_set && vote >= 0)
-            })
-            .collect::<Vec<_>>();
+        scuba_numbers.retain(|&number| {
+            let bit_set = number >> (num_bits - pos - 1) & 1 == 1;
+            (bit_set && vote < 0) || (!bit_set && vote >= 0)
+        });
         if scuba_numbers.len() == 1 {
             break;
         };
