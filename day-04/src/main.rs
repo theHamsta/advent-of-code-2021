@@ -82,20 +82,16 @@ fn main() -> anyhow::Result<()> {
             "Could not parse bingo numbers".to_string(),
         ))?
         .split(',')
-        .flat_map(|n| Some(n.parse::<i64>().ok()?))
+        .flat_map(|n| n.parse().ok())
         .collect();
     let blocks = sections
         .map(|b| {
             b.split('\n')
                 .filter(|l| !l.is_empty())
-                .map(|line| {
-                    line.split(' ')
-                        .flat_map(|n| Some(n.parse::<i64>().ok()?))
-                        .collect::<Vec<_>>()
-                })
-                .collect::<Vec<_>>()
+                .map(|line| line.split(' ').flat_map(|n| n.parse().ok()).collect())
+                .collect()
         })
-        .collect::<Vec<_>>();
+        .collect();
 
     let part1 = play1(&numbers, &blocks);
     dbg!(&part1);
