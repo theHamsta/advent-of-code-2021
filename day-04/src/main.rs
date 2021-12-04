@@ -79,7 +79,7 @@ fn main() -> anyhow::Result<()> {
     let numbers: Vec<i64> = input
         .split("\n\n")
         .next()
-        .unwrap_or(AocError::ParseError("Could not parse bingo numbers"))
+        .ok_or(AocError::ParseError("Could not parse bingo numbers".to_string()))?
         .split(',')
         .flat_map(|n| Some(n.parse::<i64>().ok()?))
         .collect();
