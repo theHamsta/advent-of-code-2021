@@ -76,19 +76,19 @@ fn main() -> anyhow::Result<()> {
     let input = std::fs::read_to_string(file).context("Failed to read input file")?;
 
     let mut sections = input.split("\n\n");
-    let numbers: Vec<i64> = sections
+    let numbers = sections
         .next()
         .ok_or(AocError::ParseError(
             "Could not parse bingo numbers".to_string(),
         ))?
         .split(',')
-        .flat_map(|n| n.parse().ok())
+        .flat_map(i64::parse)
         .collect();
     let blocks = sections
         .map(|b| {
             b.split('\n')
                 .filter(|l| !l.is_empty())
-                .map(|line| line.split(' ').flat_map(|n| n.parse().ok()).collect())
+                .map(|line| line.split(' ').flat_map(i64::parse).collect())
                 .collect()
         })
         .collect();
