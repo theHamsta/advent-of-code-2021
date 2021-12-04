@@ -82,13 +82,13 @@ fn main() -> anyhow::Result<()> {
             "Could not parse bingo numbers".to_string(),
         ))?
         .split(',')
-        .flat_map(i64::parse)
+        .flat_map(|n| n.parse())
         .collect();
     let blocks = sections
         .map(|b| {
             b.split('\n')
                 .filter(|l| !l.is_empty())
-                .map(|line| line.split(' ').flat_map(i64::parse).collect())
+                .map(|line| line.split(' ').flat_map(|n| n.parse()).collect())
                 .collect()
         })
         .collect();
