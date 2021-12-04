@@ -40,7 +40,6 @@ fn has_won(block: &Vec<Vec<i64>>, drawn: &HashSet<i64>) -> Option<i64> {
     None
 }
 
-
 fn play1(numbers: &Vec<i64>, blocks: &Vec<Vec<Vec<i64>>>) -> Option<i64> {
     let mut drawn = HashSet::new();
     for draw in numbers {
@@ -62,10 +61,10 @@ fn play2(numbers: &Vec<i64>, blocks: &Vec<Vec<Vec<i64>>>) -> Option<i64> {
         drawn.insert(*draw);
         for b in blocks.iter() {
             if let Some(sum) = has_won(b, &drawn) {
-		winners.insert(b);
-		if winners.len() == blocks.len() {
-		    return Some(sum * draw)
-		}
+                winners.insert(b);
+                if winners.len() == blocks.len() {
+                    return Some(sum * draw);
+                }
             }
         }
     }
@@ -76,16 +75,16 @@ fn main() -> anyhow::Result<()> {
     let file = std::env::args().nth(1).ok_or(AocError::NoInputFile)?;
     let input = std::fs::read_to_string(file).context("Failed to read input file")?;
 
-    let numbers: Vec<i64> = input
-        .split("\n\n")
+    let mut sections = input.split("\n\n");
+    let numbers: Vec<i64> = sections
         .next()
-        .ok_or(AocError::ParseError("Could not parse bingo numbers".to_string()))?
+        .ok_or(AocError::ParseError(
+            "Could not parse bingo numbers".to_string(),
+        ))?
         .split(',')
         .flat_map(|n| Some(n.parse::<i64>().ok()?))
         .collect();
-    let blocks: Vec<_> = input
-        .split("\n\n")
-        .skip(1)
+    let blocks = sections
         .map(|b| {
             b.split('\n')
                 .filter(|l| !l.is_empty())
