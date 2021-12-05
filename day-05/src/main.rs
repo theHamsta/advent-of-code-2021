@@ -27,17 +27,13 @@ fn main() -> anyhow::Result<()> {
     let file = std::env::args().nth(1).ok_or(AocError::NoInputFile)?;
     let input = std::fs::read_to_string(file).context("Failed to read input file")?;
 
-    let input: Vec<_> = input
-        .lines()
-        .filter(|l| !l.is_empty())
-        .flat_map(|l| {
-            let mut it = l.split(" -> ");
-            Some(Input {
-                from: parse_pair(it.next()?)?,
-                to: parse_pair(it.next()?)?,
-            })
+    let input = input.lines().filter(|l| !l.is_empty()).flat_map(|l| {
+        let mut it = l.split(" -> ");
+        Some(Input {
+            from: parse_pair(it.next()?)?,
+            to: parse_pair(it.next()?)?,
         })
-        .collect();
+    });
 
     let mut diagram = HashMap::new();
     let mut diagram2 = HashMap::new();
