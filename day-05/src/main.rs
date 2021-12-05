@@ -12,12 +12,6 @@ pub enum AocError {
     ParseError(String),
 }
 
-#[derive(Debug)]
-struct Input {
-    from: (i64, i64),
-    to: (i64, i64),
-}
-
 fn parse_pair(pair: &str) -> Option<(i64, i64)> {
     let mut it = pair.split(",");
     Some((it.next()?.parse().ok()?, it.next()?.parse().ok()?))
@@ -29,10 +23,7 @@ fn main() -> anyhow::Result<()> {
 
     let input = input.lines().filter(|l| !l.is_empty()).flat_map(|l| {
         let mut it = l.split(" -> ");
-        Some(Input {
-            from: parse_pair(it.next()?)?,
-            to: parse_pair(it.next()?)?,
-        })
+        Some((parse_pair(it.next()?)?, parse_pair(it.next()?)?))
     });
 
     let mut diagram = HashMap::new();
@@ -40,28 +31,19 @@ fn main() -> anyhow::Result<()> {
 
     for i in input {
         match i {
-            Input {
-                from: (x1, y1),
-                to: (x2, y2),
-            } if x1 == x2 => {
+            ((x1, y1), (x2, y2)) if x1 == x2 => {
                 for y in y1.min(y2)..=y1.max(y2) {
                     *diagram.entry((x1, y)).or_insert(0i64) += 1;
                     *diagram2.entry((x1, y)).or_insert(0i64) += 1;
                 }
             }
-            Input {
-                from: (x1, y1),
-                to: (x2, y2),
-            } if y1 == y2 => {
+            ((x1, y1), (x2, y2)) if y1 == y2 => {
                 for x in x1.min(x2)..=x1.max(x2) {
                     *diagram.entry((x, y1)).or_insert(0i64) += 1;
                     *diagram2.entry((x, y1)).or_insert(0i64) += 1;
                 }
             }
-            Input {
-                from: (x1, y1),
-                to: (x2, y2),
-            } => {
+            ((x1, y1), (x2, y2)) => {
                 let mut x = x1.min(x2)..=x1.max(x2);
                 let mut y = y1.min(y2)..=y1.max(y2);
                 let mut x_rev = x.clone().rev();
