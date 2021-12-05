@@ -12,18 +12,17 @@ pub enum AocError {
     ParseError(String),
 }
 
-fn parse_pair(pair: &str) -> Option<(i64, i64)> {
-    let mut it = pair.split(",");
-    Some((it.next()?.parse().ok()?, it.next()?.parse().ok()?))
-}
-
 fn main() -> anyhow::Result<()> {
     let file = std::env::args().nth(1).ok_or(AocError::NoInputFile)?;
     let input = std::fs::read_to_string(file).context("Failed to read input file")?;
 
-    let input = input.lines().filter(|l| !l.is_empty()).flat_map(|l| {
-        let mut it = l.split(" -> ");
-        Some((parse_pair(it.next()?)?, parse_pair(it.next()?)?))
+    let re = regex::Regex::new(r"(\d+),(\d+) -> (\d+),(\d+)").unwrap();
+
+    let input = re.captures_iter(&input).flat_map(|cap| {
+        Some((
+            (cap[1].parse::<i64>().ok()?, cap[2].parse::<i64>().ok()?),
+            (cap[3].parse::<i64>().ok()?, cap[4].parse::<i64>().ok()?),
+        ))
     });
 
     let mut diagram = HashMap::new();
