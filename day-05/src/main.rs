@@ -64,5 +64,8 @@ fn main() -> anyhow::Result<()> {
     let part2 = diagram2.values().filter(|&&v| v >= 2).count();
     dbg!(&part2);
 
+    // Should have done it with https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm as I
+    // first thought
+
     Ok(())
 }
