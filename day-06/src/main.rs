@@ -40,16 +40,6 @@ fn main() -> anyhow::Result<()> {
         .collect();
 
     let mut cache = HashMap::new();
-    for day in 1..=18 {
-        dbg!(&day);
-        let part1: BigInt = input
-            .iter()
-            .map(|f| fish(day.to_bigint().unwrap() - f, &mut cache))
-            .sum();
-        dbg!(&part1);
-    }
-
-    let mut cache = HashMap::new();
     let part1: BigInt = input
         .iter()
         .map(|f| fish(80.to_bigint().unwrap() - f, &mut cache))
