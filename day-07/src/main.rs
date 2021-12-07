@@ -25,17 +25,16 @@ fn main() -> anyhow::Result<()> {
     let min = *input.iter().reduce(|a, b| a.min(b)).unwrap();
     let max = *input.iter().reduce(|a, b| a.max(b)).unwrap();
 
-    let part1 = (min..=max).min_by_key(|pos| input.iter().map(|p| (pos - p).abs()).sum::<i64>());
+    let calc_fuel = |f: fn(i64, i64) -> i64| {
+        (min..=max).min_by_key(|&pos| input.iter().map(|&p| f(p, pos)).sum::<i64>())
+    };
+
+    let part1 = calc_fuel(|p, pos| (p - pos).abs());
     dbg!(&part1);
 
-    let part2 = (min..=max).min_by_key(|pos| {
-        input
-            .iter()
-            .map(|p| {
-                let n = (pos - p).abs();
-                n * (n + 1) / 2
-            })
-            .sum::<i64>()
+    let part2 = calc_fuel(|p, pos| {
+        let n = (pos - p).abs();
+        n * (n + 1) / 2
     });
     dbg!(&part2);
 
