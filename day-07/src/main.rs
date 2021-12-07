@@ -25,51 +25,19 @@ fn main() -> anyhow::Result<()> {
     let min = *input.iter().reduce(|a, b| a.min(b)).unwrap();
     let max = *input.iter().reduce(|a, b| a.max(b)).unwrap();
 
-    let mut argmin = None;
-    let mut min_fuel = None;
-    for pos in min..=max {
-        let total_fuel: i64 = input.iter().map(|p| (p - pos).abs()).sum();
-        match min_fuel {
-            None => {
-                min_fuel = Some(total_fuel);
-                argmin = Some(pos);
-            }
-            Some(a) if a > total_fuel => {
-                min_fuel = Some(total_fuel);
-                argmin = Some(pos);
-            }
-            _ => (),
-        }
-    }
+    let part1 = (min..=max).min_by_key(|pos| input.iter().map(|p| (pos - p).abs()).sum::<i64>());
+    dbg!(&part1);
 
-    dbg!(&argmin);
-    dbg!(&min_fuel);
-
-    let mut argmin = None;
-    let mut min_fuel = None;
-    for pos in (min - 2000)..=(max + 2000) {
-        let total_fuel: i64 = input
+    let part2 = (min..=max).min_by_key(|pos| {
+        input
             .iter()
             .map(|p| {
                 let n = (pos - p).abs();
                 n * (n + 1) / 2
             })
-            .sum();
-        match min_fuel {
-            None => {
-                min_fuel = Some(total_fuel);
-                argmin = Some(pos);
-            }
-            Some(a) if a > total_fuel => {
-                min_fuel = Some(total_fuel);
-                argmin = Some(pos);
-            }
-            _ => (),
-        }
-    }
-
-    dbg!(&argmin);
-    dbg!(&min_fuel);
+            .sum::<i64>()
+    });
+    dbg!(&part2);
 
     Ok(())
 }
