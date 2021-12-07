@@ -1,6 +1,7 @@
 #![feature(bool_to_option)]
 
 use anyhow::Context;
+use itertools::Itertools;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AocError {
@@ -22,8 +23,11 @@ fn main() -> anyhow::Result<()> {
         .flat_map(|n| n.parse())
         .collect();
 
-    let min = *input.iter().reduce(|a, b| a.min(b)).unwrap();
-    let max = *input.iter().reduce(|a, b| a.max(b)).unwrap();
+    let (&min, &max) = input
+        .iter()
+        .minmax()
+        .into_option()
+        .ok_or(AocError::ParseError("No numbers in input".to_string()))?;
 
     let calc_fuel = |f: fn(i64, i64) -> i64| {
         (min..=max).min_by_key(|&pos| input.iter().map(|&p| f(p, pos)).sum::<i64>())
