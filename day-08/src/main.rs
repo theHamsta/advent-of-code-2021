@@ -76,13 +76,13 @@ fn main() -> anyhow::Result<()> {
                         decode_table.get(decode(word, &p, &char_vec).as_str())?;
                     }
 
-                    let mut sum = 0;
+                    let mut number = 0;
                     for word in l[1].iter() {
-                        sum *= 10;
-                        let number = decode_table.get(decode(word, &p, &char_vec).as_str())?;
-                        sum += number;
+                        number *= 10;
+                        let digit = decode_table.get(decode(word, &p, &char_vec).as_str())?;
+                        number += digit;
                     }
-                    Some(sum)
+                    Some(number)
                 })
                 .next()
         })
