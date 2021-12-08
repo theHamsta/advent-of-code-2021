@@ -73,7 +73,6 @@ fn main() -> anyhow::Result<()> {
                 .permutations(7)
                 .flat_map(|p| {
                     for word in l[0].iter() {
-                        decode(word, &p, &char_vec);
                         decode_table.get(decode(word, &p, &char_vec).as_str())?;
                     }
 
