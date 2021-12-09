@@ -16,9 +16,7 @@ pub enum AocError {
 fn offset(array: &Vec<Vec<i64>>, (x, y): (i64, i64), (dx, dy): (i64, i64)) -> Option<&i64> {
     array
         .get((y + dy) as usize)
-        .iter()
-        .flat_map(|v| v.get((x + dx) as usize))
-        .next()
+        .and_then(|v| v.get((x + dx) as usize))
 }
 
 fn neighbors(array: &Vec<Vec<i64>>, pos: (i64, i64)) -> [Option<&i64>; 4] {
