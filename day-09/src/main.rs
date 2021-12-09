@@ -1,5 +1,3 @@
-#![feature(bool_to_option)]
-
 use std::{collections::HashMap, convert::identity};
 
 use anyhow::Context;
