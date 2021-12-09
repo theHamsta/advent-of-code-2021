@@ -13,6 +13,8 @@ pub enum AocError {
     ParseError(String),
 }
 
+const OFFSETS: [(i64, i64); 4] = [(1, 0), (0, 1), (-1, 0), (0, -1)];
+
 fn offset(array: &Vec<Vec<i64>>, (x, y): (i64, i64), (dx, dy): (i64, i64)) -> Option<&i64> {
     array
         .get((y + dy) as usize)
@@ -20,12 +22,7 @@ fn offset(array: &Vec<Vec<i64>>, (x, y): (i64, i64), (dx, dy): (i64, i64)) -> Op
 }
 
 fn neighbors(array: &Vec<Vec<i64>>, pos: (i64, i64)) -> [Option<&i64>; 4] {
-    [
-        offset(array, pos, (1, 0)),
-        offset(array, pos, (0, 1)),
-        offset(array, pos, (-1, 0)),
-        offset(array, pos, (0, -1)),
-    ]
+    OFFSETS.map(|o| offset(array, pos, o))
 }
 
 fn main() -> anyhow::Result<()> {
@@ -66,7 +63,7 @@ fn main() -> anyhow::Result<()> {
                 center = input[pos.1 as usize][pos.0 as usize];
                 let next = neighbors(&input, pos)
                     .iter()
-                    .zip([(1, 0), (0, 1), (-1, 0), (0, -1)].iter())
+                    .zip(OFFSETS.iter())
                     .flat_map(|(val, pos)| val.map(|v| (v, pos)))
                     .filter(|(val, _)| center > **val)
                     .min_by_key(|(val, _pos)| *val);
