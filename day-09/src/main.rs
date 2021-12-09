@@ -55,7 +55,7 @@ fn main() -> anyhow::Result<()> {
     }
     dbg!(&sum);
 
-    let mut basin_score = HashMap::new();
+    let mut basin_scores = HashMap::new();
 
     for y in 0..input.len() {
         for x in 0..input[0].len() {
@@ -78,11 +78,11 @@ fn main() -> anyhow::Result<()> {
                     break;
                 }
             }
-            *basin_score.entry(pos).or_insert(0) += 1;
+            *basin_scores.entry(pos).or_insert(0) += 1;
         }
     }
 
-    let part2: i64 = basin_score.values().sorted().rev().take(3).product();
+    let part2: i64 = basin_scores.values().sorted().rev().take(3).product();
     dbg!(&part2);
     Ok(())
 }
