@@ -2,18 +2,10 @@ import argparse
 import numpy as np
 import pystencils as ps
 import sympy as sp
+import itertools
 
-OFFSETS = [
-    (0, 0),
-    (1, 0),
-    (0, 1),
-    (-1, 0),
-    (0, -1),
-    (1, 1),
-    (-1, 1),
-    (-1, -1),
-    (1, -1),
-]
+OFFSETS = list(itertools.product(range(-1, 2), repeat=2))
+print(OFFSETS)
 
 
 def make_kernel(shape):
