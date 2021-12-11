@@ -17,7 +17,7 @@ OFFSETS = [
 
 
 def make_kernel(shape):
-    src, dst, flashes = ps.fields(f'src, dst, flashes: int32[{shape[0]},{shape[1]}]')
+    src, dst = ps.fields(f'src, dst: int32[{shape[0]},{shape[1]}]')
 
     flash_assignment = ps.AssignmentCollection({
         dst[0, 0]: sp.Piecewise((0, sp.Eq(src[0, 0], 0)),
