@@ -20,19 +20,15 @@ const OFFSETS: [(i64, i64); 8] = [
     (1, -1),
 ];
 
-fn offset_mut(
-    array: &mut Vec<Vec<i64>>,
-    (x, y): (i64, i64),
-    (dx, dy): (i64, i64),
-) -> Option<&mut i64> {
+fn get_mut(array: &mut Vec<Vec<i64>>, (x, y): (i64, i64)) -> Option<&mut i64> {
     array
-        .get_mut((y + dy) as usize)
-        .and_then(|v| v.get_mut((x + dx) as usize))
+        .get_mut((y) as usize)
+        .and_then(|v| v.get_mut((x) as usize))
 }
 
 fn process(array: &mut Vec<Vec<i64>>, pos: (i64, i64)) -> usize {
     let mut sum = 0;
-    if let Some(value) = offset_mut(array, pos, (0, 0)) {
+    if let Some(value) = get_mut(array, pos) {
         if *value >= 0 {
             *value += 1;
             if *value == 10 {
@@ -82,7 +78,8 @@ fn main() -> anyhow::Result<()> {
     let part2 = (0usize..)
         .map(|_| step(&mut input))
         .find_position(|&flashes| flashes == num_octopusses)
-        .and_then(|(index, _)| Some(index + 1)).unwrap();
+        .and_then(|(index, _)| Some(index + 1))
+        .unwrap();
     dbg!(&part2);
     Ok(())
 }
