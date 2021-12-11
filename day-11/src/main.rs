@@ -56,11 +56,9 @@ fn step(array: &mut Vec<Vec<i64>>) -> usize {
         }
     }
 
-    for y in 0..array.len() {
-        for x in 0..array[0].len() {
-            if array[y][x] > 9 {
-                array[y][x] = 0;
-            }
+    for value in array.iter_mut().flatten() {
+        if *value > 9 {
+            *value = 0;
         }
     }
 
