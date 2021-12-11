@@ -74,8 +74,6 @@ fn main() -> anyhow::Result<()> {
         .map(|l| l.chars().flat_map(|c| format!("{}", c).parse()).collect())
         .collect();
 
-    dbg!(&input);
-
     let mut input_clone = input.clone();
     let part1: usize = (0..100).map(|_| step(&mut input_clone)).sum();
     dbg!(&part1);
