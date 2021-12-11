@@ -5,7 +5,6 @@ import sympy as sp
 import itertools
 
 OFFSETS = list(itertools.product(range(-1, 2), repeat=2))
-print(OFFSETS)
 
 
 def make_kernel(shape):
