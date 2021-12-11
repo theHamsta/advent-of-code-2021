@@ -84,7 +84,7 @@ fn main() -> anyhow::Result<()> {
     let part2 = (0usize..)
         .map(|_| step(&mut input))
         .find_position(|&flashes| flashes == num_octopusses)
-        .and_then(|(index, _)| Some(index + 1));
+        .and_then(|(index, _)| Some(index + 1)).unwrap();
     dbg!(&part2);
     Ok(())
 }
