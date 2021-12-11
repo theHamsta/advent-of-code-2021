@@ -29,16 +29,14 @@ fn get_mut(array: &mut Vec<Vec<i64>>, (x, y): (i64, i64)) -> Option<&mut i64> {
 fn process(array: &mut Vec<Vec<i64>>, pos: (i64, i64)) -> usize {
     let mut sum = 0;
     if let Some(value) = get_mut(array, pos) {
-        if *value >= 0 {
-            *value += 1;
-            if *value == 10 {
-                sum += 1;
-                sum += OFFSETS
-                    .map(|(dx, dy)| (pos.0 + dx, pos.1 + dy))
-                    .map(|pos| process(array, pos))
-                    .iter()
-                    .sum::<usize>();
-            }
+        *value += 1;
+        if *value == 10 {
+            sum += 1;
+            sum += OFFSETS
+                .map(|(dx, dy)| (pos.0 + dx, pos.1 + dy))
+                .map(|pos| process(array, pos))
+                .iter()
+                .sum::<usize>();
         }
     }
     sum
