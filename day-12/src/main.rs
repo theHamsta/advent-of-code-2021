@@ -23,6 +23,7 @@ fn depth_search<'a, 'cache>(
     cave_name: &'a str,
     visited: &'cache im::HashMap<&'a Cave<'a>, u64>,
     second_visit_ok: bool,
+    // With cache 251ms else ~1.9s
     cache: &'cache mut HashMap<(&'a str, im::HashMap<&'a Cave<'a>, u64>, bool), u64>,
 ) -> u64 {
     if cave_name == "end" {
