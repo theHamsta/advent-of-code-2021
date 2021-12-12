@@ -18,14 +18,14 @@ enum Cave<'a> {
     Small(&'a str),
 }
 
-fn depth_search<'a, 'cache>(
-    system: &'a HashMap<String, HashSet<Cave<'a>>>,
-    cave_name: &'a str,
-    visited: &'cache im::HashMap<&'a Cave<'a>, u64>,
+fn depth_search<'graph, 'cache>(
+    system: &'graph HashMap<String, HashSet<Cave<'graph>>>,
+    cave_name: &'graph str,
+    visited: &'cache im::HashMap<&'graph Cave<'graph>, u64>,
     second_visit_ok: bool,
     // With cache 243ms else ~1.9s
     // With cache multiple second visits: 211352815 (1.13s)
-    cache: &'cache mut HashMap<(&'a str, im::HashMap<&'a Cave<'a>, u64>, bool), u64>,
+    cache: &'cache mut HashMap<(&'graph str, im::HashMap<&'graph Cave<'graph>, u64>, bool), u64>,
 ) -> u64 {
     if cave_name == "end" {
         1
