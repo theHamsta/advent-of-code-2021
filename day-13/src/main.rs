@@ -54,7 +54,11 @@ fn main() -> anyhow::Result<()> {
         dbg!(&dots.len());
     }
 
-    let max_x = dots.iter().map(|(x, _)| x).max().unwrap();
+    let max_x = dots
+        .iter()
+        .map(|(x, _)| x)
+        .max()
+        .ok_or_else(|| AocError::ParseError("No input dots!".to_owned()))?;
     let max_y = dots.iter().map(|(_, y)| y).max().unwrap();
     for y in 0..=*max_y {
         for x in 0..=*max_x {
