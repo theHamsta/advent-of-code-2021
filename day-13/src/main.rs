@@ -37,7 +37,7 @@ fn main() -> anyhow::Result<()> {
                     if *x < coordinate {
                         *x
                     } else {
-                        coordinate - (*x - coordinate)
+                        2 * coordinate - *x
                     },
                     *y,
                 ),
@@ -46,7 +46,7 @@ fn main() -> anyhow::Result<()> {
                     if *y < coordinate {
                         *y
                     } else {
-                        coordinate - (*y - coordinate)
+                        2 * coordinate - *y
                     },
                 ),
                 _ => unreachable!(),
@@ -67,24 +67,6 @@ fn main() -> anyhow::Result<()> {
         }
         print!("\n");
     }
-
-    //let part1 = depth_search(
-    //&system,
-    //"start",
-    //&im::HashMap::unit(&start_node, 2),
-    //false,
-    //&mut cache,
-    //);
-    //dbg!(&part1);
-
-    //let part2 = depth_search(
-    //&system,
-    //"start",
-    //&im::HashMap::unit(&start_node, 2),
-    //true,
-    //&mut cache,
-    //);
-    //dbg!(&part2);
 
     Ok(())
 }
