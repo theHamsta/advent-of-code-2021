@@ -16,7 +16,7 @@ fn main() -> anyhow::Result<()> {
     let input = std::fs::read_to_string(file).context("Failed to read input file")?;
 
     let re_dots = Regex::new(r"(\d+),(\d+)").unwrap();
-    let re_folds = Regex::new(r"fold along (\w)=(\d*)").unwrap();
+    let re_folds = Regex::new(r"fold along ([xy])=(\d*)").unwrap();
 
     let mut dots: HashSet<(i64, i64)> = re_dots
         .captures_iter(&input)
