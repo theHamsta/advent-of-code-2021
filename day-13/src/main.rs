@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
     let re_dots = Regex::new(r"(\d+),(\d+)").unwrap();
     let re_folds = Regex::new(r"fold along (\w)=(\d*)").unwrap();
 
-    let dots: HashSet<(i64, i64)> = re_dots
+    let mut dots: HashSet<(i64, i64)> = re_dots
         .captures_iter(&input)
         .flat_map(|cap| Some((cap[1].parse().ok()?, cap[2].parse().ok()?)))
         .collect();
@@ -28,9 +28,8 @@ fn main() -> anyhow::Result<()> {
         .flat_map(|cap| Some((cap[1].chars().next()?, cap[2].parse().ok()?)))
         .collect();
 
-    let mut dots_copy = dots.clone();
     for (axis, coordinate) in folds {
-        dots_copy = dots_copy
+        dots = dots
             .iter()
             .map(|(x, y)| match axis {
                 'x' => (
@@ -52,14 +51,14 @@ fn main() -> anyhow::Result<()> {
                 _ => unreachable!(),
             })
             .collect();
-        dbg!(&dots_copy.len());
+        dbg!(&dots.len());
     }
 
-    let max_x = dots_copy.iter().map(|(x, _)| x).max().unwrap();
-    let max_y = dots_copy.iter().map(|(_, y)| y).max().unwrap();
+    let max_x = dots.iter().map(|(x, _)| x).max().unwrap();
+    let max_y = dots.iter().map(|(_, y)| y).max().unwrap();
     for y in 0..=*max_y {
         for x in 0..=*max_x {
-            if dots_copy.contains(&(x, y)) {
+            if dots.contains(&(x, y)) {
                 print!("█");
             } else {
                 print!(" ");
