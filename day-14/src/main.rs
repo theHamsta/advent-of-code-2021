@@ -47,7 +47,7 @@ fn expand(
     cache: &mut HashMap<((char, char), usize), [u64; 26]>,
 ) -> Option<[u64; 26]> {
     let mut result = [0; 26];
-    // Count first letter (will never be considers as second part of an unexpandable
+    // Count first letter (will never be considered as second part of an unexpandable)
     result[input.chars().next()? as usize - 'A' as usize] = 1;
     for (a, b) in input.chars().tuple_windows() {
         result = expand_chars((a, b), &rules, steps, cache)
