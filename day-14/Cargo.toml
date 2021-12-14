@@ -12,8 +12,3 @@ regex = "1.5.4"
 thiserror = "1.0.30"
 num-bigint = "0.4.3"
 im = "15.0.0"
-measure_time = "0.8"
-
-[target.x86_64-unknown-linux-gnu]
-linker = "/usr/lib/ccache/clang-14"
-rustflags = ["-Clink-arg=-fuse-ld=lld", "-Clink-arg=-Wl,--no-rosegment"]
