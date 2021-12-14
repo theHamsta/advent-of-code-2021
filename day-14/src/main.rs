@@ -1,6 +1,6 @@
 #![feature(array_zip)]
 
-use std::{cell::Cell, collections::HashMap, collections::HashSet, mem::swap, rc::Rc};
+use std::collections::HashMap;
 
 use anyhow::Context;
 use itertools::Itertools;
@@ -84,7 +84,8 @@ fn main() -> anyhow::Result<()> {
     let mut cache = HashMap::new();
 
     for (part, &steps) in [10, 40].iter().enumerate() {
-        if let Some((min, max)) = expand(&template, &rules, steps, &mut cache).unwrap()
+        if let Some((min, max)) = expand(&template, &rules, steps, &mut cache)
+            .unwrap()
             .iter()
             .filter(|&&f| f != 0)
             .minmax()
