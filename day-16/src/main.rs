@@ -148,8 +148,8 @@ fn main() -> anyhow::Result<()> {
     let mut it = input_binary.chars();
     let mut buffer = String::new();
     let parsed = parse_package(&mut it, &mut buffer, &mut consumed);
-    let part1 = version_sum(&parsed);
 
+    let part1 = version_sum(&parsed);
     dbg!(part1);
 
     let part2 = evaluate(&parsed);
