@@ -103,7 +103,7 @@ fn version_sum(package: &Package) -> u64 {
     package.version
         + match &package.package_type {
             PackageType::Literal(_) => 0,
-            PackageType::Operator(_, packages) => packages.iter().map(|p| version_sum(&p)).sum(),
+            PackageType::Operator(_, packages) => packages.iter().map(version_sum).sum(),
         }
 }
 
@@ -111,7 +111,7 @@ fn evaluate(package: &Package) -> u64 {
     match &package.package_type {
         PackageType::Literal(number) => *number,
         PackageType::Operator(o, packages) => {
-            let mut evaluated = packages.iter().map(|p| evaluate(p));
+            let mut evaluated = packages.iter().map(evaluate);
             match o {
                 Op::Sum => evaluated.sum(),
                 Op::Product => evaluated.product(),
