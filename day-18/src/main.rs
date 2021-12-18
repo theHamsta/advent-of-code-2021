@@ -67,10 +67,10 @@ fn snail_fish_explode(
                         add_nested(right, b.as_u64().unwrap(), 0);
                         return true;
                     } else {
-                        unreachable!();
+                        unreachable!(); // Array has more or less than 2 entries
                     }
                 } else {
-                    unreachable!();
+                    unreachable!(); // Array has more or less than 2 entries
                 }
             }
         }
