@@ -1,11 +1,3 @@
-#![allow(unused_variables, unused_imports, dead_code)]
-
-use std::{
-    collections::{HashMap, HashSet},
-    fmt::format,
-    ops::RangeInclusive,
-};
-
 use anyhow::Context;
 use itertools::Itertools;
 use serde_json::{json, Value};
@@ -26,7 +18,6 @@ fn snail_fish_split(value: &mut Value) -> bool {
     match value {
         Value::Number(n) if n.as_u64().unwrap() >= 10 => {
             *value = json!([n.as_u64().unwrap() / 2, (n.as_u64().unwrap() + 1) / 2]);
-            // println!("split {value}");
             true
         }
         Value::Array(children) => children.iter_mut().any(snail_fish_split),
@@ -52,8 +43,6 @@ fn snail_fish_explode(
     left: Option<&mut Value>,
     right: Option<&mut Value>,
 ) -> bool {
-    //println!("try explode: {value}      {nesting_level}");
-
     if let Value::Array(children) = value {
         if nesting_level >= 3 {
             if let Some((idx, to_explode)) = children
@@ -66,22 +55,16 @@ fn snail_fish_explode(
                     let a = a.clone();
                     let b = b.clone();
                     if idx == 0 {
-                        // dbg!(&left, &right);
-                        // println!("before left {a} {b}");
                         *value = json!([0u64, children[1]]);
 
                         add_nested(left, a.as_u64().unwrap(), 1);
                         add_nested(Some(&mut value[1]), b.as_u64().unwrap(), 0);
-                        // println!("explode {value}");
                         return true;
                     } else if idx == 1 {
-                        //dbg!(&left, &right);
-                        // println!("before right {a} {b}");
                         *value = json!([children[0], 0u64]);
 
                         add_nested(Some(&mut value[0]), a.as_u64().unwrap(), 1);
                         add_nested(right, b.as_u64().unwrap(), 0);
-                        //println!("explode {value}");
                         return true;
                     } else {
                         unreachable!();
@@ -101,9 +84,7 @@ fn snail_fish_explode(
 
 fn snail_fish_add(a: Value, b: Value) -> Value {
     let mut current = json!([a, b]);
-    while snail_fish_reduce(&mut current) {
-        // println!("{current}");
-    }
+    while snail_fish_reduce(&mut current) {}
     current
 }
 
