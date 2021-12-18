@@ -105,7 +105,9 @@ fn main() -> anyhow::Result<()> {
         .iter()
         .cloned()
         .reduce(snail_fish_add)
-        .ok_or_else(|| AocError::ParseError("No input not parsed successfully".to_string()))?;
+        .ok_or_else(|| {
+            AocError::ParseError("none of the input lines parsed successfully".to_string())
+        })?;
     let part1 = magnitude(&part1);
     dbg!(part1);
 
