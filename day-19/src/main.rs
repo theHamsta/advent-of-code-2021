@@ -76,27 +76,11 @@ fn get_rotations() -> Vec<Matrix3<f64>> {
         .collect()
 }
 
-#[derive(Eq, PartialEq)]
 struct Scanner {
     id: String,
     scanners: Vec<Coord>,
     points: HashSet<Coord>,
     angle_features: HashMap<[i64; 3], HashSet<Coord>>,
-}
-
-impl std::hash::Hash for Scanner {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.id.hash(state);
-    }
-}
-
-impl std::fmt::Debug for Scanner {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Scanner")
-            .field("id", &self.id)
-            .field("points", &self.points)
-            .finish()
-    }
 }
 
 impl Scanner {
