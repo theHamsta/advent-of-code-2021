@@ -22,10 +22,12 @@ fn parse(input: &str) -> anyhow::Result<HashMap<String, HashSet<Coord>>> {
 
     let mut lines = input.lines().filter(|l| !l.is_empty());
     let mut current: String = re_section
-        .captures(lines.next().ok_or(AocError::ParseError(
-            "input does not have a first line".into(),
-        ))?)
-        .ok_or(AocError::ParseError("regex didn't match".into()))?[1]
+        .captures(
+            lines
+                .next()
+                .ok_or_else(|| AocError::ParseError("input does not have a first line".into()))?,
+        )
+        .ok_or_else(|| AocError::ParseError("regex didn't match".into()))?[1]
         .parse()?;
 
     for l in lines {
@@ -34,7 +36,7 @@ fn parse(input: &str) -> anyhow::Result<HashMap<String, HashSet<Coord>>> {
         } else {
             detections
                 .entry(current.clone())
-                .or_insert_with(|| HashSet::new())
+                .or_insert_with(HashSet::new)
                 .insert({
                     let mut it = l.split(',');
                     Vector3::new(
@@ -103,7 +105,7 @@ impl Scanner {
             let key = [a.dot(b), b.dot(c), c.dot(a)];
             rtn.angle_features
                 .entry(key)
-                .or_insert_with(|| HashSet::new())
+                .or_insert_with(HashSet::new)
                 .insert(*vec[0]);
         });
 
@@ -128,7 +130,7 @@ impl Scanner {
             ROTATIONS.iter().enumerate().for_each(|(idx, rot)| {
                 for (a, bs) in correspondences.iter() {
                     for b in bs {
-                        *shifts.entry((idx, rotate(&a, &rot) - b)).or_insert(0) += 1
+                        *shifts.entry((idx, rotate(a, rot) - b)).or_insert(0) += 1
                     }
                 }
             });
@@ -145,7 +147,7 @@ impl Scanner {
                 points: self
                     .points
                     .iter()
-                    .map(|p| rotate(&p, &ROTATIONS[*idx]) - shift)
+                    .map(|p| rotate(p, &ROTATIONS[*idx]) - shift)
                     .chain(other.points.iter().cloned())
                     .collect(),
                 angle_features: self
@@ -222,7 +224,7 @@ mod test {
 
         rotations
             .iter()
-            .map(|r| rotate(&v, &r))
+            .map(|r| rotate(&v, r))
             .find(|&w| w == v)
             .unwrap();
     }
