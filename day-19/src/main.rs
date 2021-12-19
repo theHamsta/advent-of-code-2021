@@ -84,7 +84,10 @@ struct Scanner {
 }
 
 impl Scanner {
-    fn new<I: Iterator<Item = Coord>>(id: String, points: I) -> Self {
+    fn new<Points>(id: String, points: Points) -> Self
+    where
+        Points: Iterator<Item = Coord>,
+    {
         let mut rtn = Self {
             id,
             scanners: vec![Vector3::new(0, 0, 0)],
