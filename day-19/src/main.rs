@@ -108,6 +108,7 @@ impl Scanner {
             angle_features: HashMap::new(),
         };
 
+        // distances instead of triangle angles would have been better!
         rtn.points.iter().permutations(3).for_each(|vec| {
             let a = vec[1] - vec[0];
             let b = vec[2] - vec[0];
