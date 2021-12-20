@@ -146,11 +146,3 @@ fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn rotation_has_identity() {}
-}
