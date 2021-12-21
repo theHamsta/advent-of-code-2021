@@ -51,6 +51,7 @@ impl Image {
             background_pixel: b'.',
         }
     }
+
     fn from_str(input: &str) -> anyhow::Result<Self> {
         let mut lines = input.lines();
         let decode_string = lines.next().ok_or(AocError::EndOfInput)?.into();
