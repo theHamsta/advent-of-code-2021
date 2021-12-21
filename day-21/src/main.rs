@@ -14,7 +14,7 @@ pub enum AocError {
     ParseError(String),
 }
 
-static NUMBERS: Lazy<[u64; 7]> = Lazy::new(|| {
+static DICE_SUM_FREQUENCIES: Lazy<[u64; 7]> = Lazy::new(|| {
     let mut array = [0; 7];
     repeat_n(1..=3, 3)
         .multi_cartesian_product()
@@ -41,7 +41,7 @@ fn play_quantum(
             if let Some(entry) = entry {
                 *entry
             } else {
-                let rtn = NUMBERS
+                let rtn = DICE_SUM_FREQUENCIES
                     .iter()
                     .enumerate()
                     .map(|(idx, freq)| {
