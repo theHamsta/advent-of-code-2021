@@ -107,7 +107,10 @@ fn main() -> anyhow::Result<()> {
     dbg!(part1);
 
     let mut cache = HashMap::new();
-    let part2 = play_quantum([0, 0], [players[0].1, players[1].1], true, 21, &mut cache);
+    let part2 = play_quantum([0, 0], [players[0].1, players[1].1], true, 21, &mut cache)
+        .into_iter()
+        .max()
+        .unwrap();
     dbg!(part2);
 
     Ok(())
