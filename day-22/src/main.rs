@@ -62,9 +62,9 @@ fn main() -> anyhow::Result<()> {
     let mut array = Array::zeros((z_values.len() - 1, y_values.len() - 1, x_values.len() - 1).f());
 
     for (is_on, xr, yr, zr) in steps {
-        let idx0 = [zr.0, zr.1].map(|z| z_values.binary_search(&z).unwrap());
+        let idx0 = [xr.0, xr.1].map(|x| x_values.binary_search(&x).unwrap());
         let idx1 = [yr.0, yr.1].map(|y| y_values.binary_search(&y).unwrap());
-        let idx2 = [xr.0, xr.1].map(|x| x_values.binary_search(&x).unwrap());
+        let idx2 = [zr.0, zr.1].map(|z| z_values.binary_search(&z).unwrap());
         array
             .slice_mut(s![idx0[0]..idx0[1], idx1[0]..idx1[1], idx2[0]..idx2[1]])
             .fill(is_on as u8);
@@ -80,7 +80,7 @@ fn main() -> anyhow::Result<()> {
             for y in 0..array.shape()[1] {
                 let dzy = dz * (y_values[y + 1] - y_values[y]);
                 for x in 0..array.shape()[2] {
-                    if array[(z, y, x)] != 0 {
+                    if array[(x, y, z)] != 0 {
                         let volume = dzy * (x_values[x + 1] - x_values[x]);
                         part2 += volume as u64;
                         if -50 <= z_values[z]
