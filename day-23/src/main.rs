@@ -16,7 +16,7 @@ pub enum AocError {
 }
 
 #[derive(Debug, Hash, Eq, PartialEq, Copy, Clone, Ord, PartialOrd)]
-enum AmphipodState {
+enum State {
     Parked {
         actual: u8,
         target: u8,
@@ -31,63 +31,67 @@ enum AmphipodState {
     Correct,
 }
 
-impl AmphipodState {
+impl State {
     fn correct(&self) -> bool {
-        matches!(self, AmphipodState::Correct)
+        matches!(self, State::Correct)
+    }
+
+    fn target(&self) -> Option<u8> {
+        match self {
+            Self::Correct => None,
+            &Self::Wrong { target, .. } | &Self::Parked { target, .. } => Some(target),
+        }
+    }
+
+    fn parking_pos(&self) -> Option<u8> {
+        match self {
+            &Self::Parked { actual, .. } => Some(actual),
+            _ => None,
+        }
     }
 }
 
 fn solve_hallway_cached<const N: usize>(
-    amphipods: &mut [AmphipodState; N],
+    amphipods: &mut [State; N],
     hallway_tokens: &mut [bool; 11],
     house_tokens: &mut HashSet<(u8, u8)>,
-    cache: &mut HashMap<[AmphipodState; N], Option<u64>>,
+    cache: &mut HashMap<[State; N], Option<u64>>,
 ) -> Option<u64> {
     let mut key = amphipods.clone();
     key.sort();
     if let Some(solution) = cache.get(&key) {
-        *solution
+        solution.clone()
     } else {
         let solution = solve_hallway(amphipods, hallway_tokens, house_tokens, cache);
-        cache.insert(key, solution);
+        cache.insert(key, solution.clone());
         solution
     }
 }
 
 fn solve_hallway<const N: usize>(
-    amphipods: &mut [AmphipodState; N],
+    state: &mut [State; N],
     hallway_tokens: &mut [bool; 11],
     house_tokens: &mut HashSet<(u8, u8)>,
-    cache: &mut HashMap<[AmphipodState; N], Option<u64>>,
+    cache: &mut HashMap<[State; N], Option<u64>>,
 ) -> Option<u64> {
-    unsafe {
-        static mut RECORD: usize = 0usize;
-
-        let before = RECORD;
-        RECORD = RECORD.max(
-            (*amphipods)
+    assert!(
+        state.into_iter().flat_map(|s| s.parking_pos()).count()
+            == state
                 .into_iter()
-                .filter(AmphipodState::correct)
-                .count(),
-        );
+                .flat_map(|s| s.parking_pos())
+                .unique()
+                .count()
+    );
 
-        if RECORD != before {
-            dbg!(&amphipods);
-            dbg!(&hallway_tokens);
-            dbg!(&house_tokens);
-            dbg!(&RECORD);
-        }
-    }
-
-    if amphipods.iter().all(AmphipodState::correct) {
-        Some(0)
+    if state.iter().all(State::correct) {
+        Some(0 /*, "Finished".into()*/)
     } else {
-        (*amphipods)
+        (*state)
             .into_iter()
             .enumerate()
             .flat_map(|(idx, s)| match s {
-                AmphipodState::Correct => None,
-                AmphipodState::Wrong {
+                State::Correct => None,
+                State::Wrong {
                     actual,
                     target,
                     move_cost,
@@ -104,8 +108,13 @@ fn solve_hallway<const N: usize>(
                                         place..=actual
                                     })
                                     .all(|i| hallway_tokens[i]);
-                                    if hallway_free {
-                                        amphipods[idx] = AmphipodState::Parked {
+                                    if hallway_free
+                                        && place != 2
+                                        && place != 4
+                                        && place != 6
+                                        && place != 8
+                                    {
+                                        state[idx] = State::Parked {
                                             actual: place as u8,
                                             target,
                                             move_cost,
@@ -113,22 +122,29 @@ fn solve_hallway<const N: usize>(
                                         hallway_tokens[place] = false;
                                         house_tokens.insert((actual as u8, stack_depth));
                                         let rtn = solve_hallway_cached(
-                                            amphipods,
+                                            state,
                                             hallway_tokens,
                                             house_tokens,
                                             cache,
                                         )
                                         .and_then(|s| {
+                                            let cost = move_cost as u64
+                                                * (stack_depth as u64
+                                                    + (actual as i64 - place as i64).abs() as u64);
                                             Some(
-                                                s + move_cost as u64
-                                                    * (stack_depth as u64
-                                                        + (actual as i64 - place as i64).abs()
-                                                            as u64),
+                                                s + cost,
+                                                //format!(
+                                                //"parked {} from {} at {} (cost {cost})\n{}",
+                                                //target_to_letter(target),
+                                                //actual,
+                                                //place,
+                                                //s.1
+                                                //),
                                             )
                                         });
                                         house_tokens.remove(&(actual as u8, stack_depth));
                                         hallway_tokens[place] = true;
-                                        amphipods[idx] = s;
+                                        state[idx] = s;
                                         rtn
                                     } else {
                                         None
@@ -140,7 +156,7 @@ fn solve_hallway<const N: usize>(
                         None
                     }
                 }
-                AmphipodState::Parked {
+                State::Parked {
                     actual,
                     target,
                     move_cost,
@@ -157,26 +173,43 @@ fn solve_hallway<const N: usize>(
                             .take_while(|k| house_tokens.contains(k))
                             .last();
                         free_house.and_then(|h| {
-                            amphipods[idx] = AmphipodState::Correct;
-                            hallway_tokens[actual as usize] = true;
-                            house_tokens.remove(&h);
-                            let rtn = solve_hallway_cached(
-                                amphipods,
-                                hallway_tokens,
-                                house_tokens,
-                                cache,
-                            )
-                            .and_then(|acc| {
-                                Some(
-                                    acc + move_cost as u64
-                                        * (h.1 as u64
-                                            + (actual as i64 - target as i64).abs() as u64),
+                            if h.1 as usize
+                                == state
+                                    .into_iter()
+                                    .filter(|s| s.target() == Some(target))
+                                    .count()
+                            {
+                                state[idx] = State::Correct;
+                                hallway_tokens[actual as usize] = true;
+                                house_tokens.remove(&h);
+                                let rtn = solve_hallway_cached(
+                                    state,
+                                    hallway_tokens,
+                                    house_tokens,
+                                    cache,
                                 )
-                            });
-                            house_tokens.insert(h);
-                            hallway_tokens[actual as usize] = false;
-                            amphipods[idx] = s;
-                            rtn
+                                .and_then(|acc| {
+                                    let cost = move_cost as u64
+                                        * (h.1 as u64
+                                            + (actual as i64 - target as i64).abs() as u64);
+                                    Some(
+                                        acc + cost,
+                                        //format!(
+                                        //"home {} from {} depth {} (cost {cost})\n{}",
+                                        //target_to_letter(target),
+                                        //actual,
+                                        //h.1,
+                                        //acc.1
+                                        //),
+                                    )
+                                });
+                                house_tokens.insert(h);
+                                hallway_tokens[actual as usize] = false;
+                                state[idx] = s;
+                                rtn
+                            } else {
+                                None
+                            }
                         })
                     } else {
                         None
@@ -190,8 +223,11 @@ fn solve_hallway<const N: usize>(
 fn letter_to_idx(c: char) -> u64 {
     (c as u64) - ('A' as u64)
 }
+//fn target_to_letter(c: u8) -> char {
+//(((c - 2) / 2) + ('A' as u8)) as char
+//}
 
-fn parse<const N: usize>(input: &str) -> anyhow::Result<[AmphipodState; N]> {
+fn parse<const N: usize>(input: &str) -> anyhow::Result<[State; N]> {
     let mut part2_input: String;
     let input = if N == 16 {
         let mut it = input.lines();
@@ -220,7 +256,7 @@ fn parse<const N: usize>(input: &str) -> anyhow::Result<[AmphipodState; N]> {
                     .chars()
                     .next()
                     .unwrap();
-                AmphipodState::Wrong {
+                State::Wrong {
                     actual: stack_positions[letter_to_idx(letter) as usize],
                     target: stack_positions[letter_to_idx(actual_letter) as usize],
                     move_cost: 10_u64.pow(letter_to_idx(actual_letter) as u32) as u16,
@@ -234,10 +270,10 @@ fn parse<const N: usize>(input: &str) -> anyhow::Result<[AmphipodState; N]> {
             .iter_mut()
             .rev()
             .take_while(|a| {
-                matches!(a[i], AmphipodState::Wrong{target, actual, ..} if target == actual
+                matches!(a[i], State::Wrong{target, actual, ..} if target == actual
                 )
             })
-            .for_each(|a| a[i] = AmphipodState::Correct);
+            .for_each(|a| a[i] = State::Correct);
     }
 
     Ok(state
@@ -266,13 +302,13 @@ fn main() -> anyhow::Result<()> {
     let mut initial_state = parse::<16>(&input)?;
     let mut hallway_tokens = [true; "...........".len()];
 
-    //let part2 = solve_hallway(
-    //&mut initial_state,
-    //&mut hallway_tokens,
-    //&mut HashSet::new(),
-    //&mut HashMap::new(),
-    //);
-    //dbg!(&part2);
+    let part2 = solve_hallway(
+        &mut initial_state,
+        &mut hallway_tokens,
+        &mut HashSet::new(),
+        &mut HashMap::new(),
+    );
+    dbg!(&part2);
 
     Ok(())
 }
