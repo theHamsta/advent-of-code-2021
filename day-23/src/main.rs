@@ -109,7 +109,7 @@ fn solve_hallway<const N: usize>(
                                     })
                                     .all(|i| hallway_tokens[i]);
                                     if hallway_free
-                                        && place != 2
+                                        && place != 2 // Very stupid rule that I didn't read! They never stop before their house otherwise you can achieve a 20 points lower score in the example and it will take much longer
                                         && place != 4
                                         && place != 6
                                         && place != 8
