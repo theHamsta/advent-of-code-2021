@@ -74,7 +74,7 @@ fn solve_hallway<const N: usize>(
     house_tokens: &mut HashSet<(u8, u8)>,
     cache: &mut HashMap<[State; N], Option<u64>>,
 ) -> Option<u64> {
-    assert!(
+    debug_assert!(
         state.into_iter().flat_map(|s| s.parking_pos()).count()
             == state
                 .into_iter()
