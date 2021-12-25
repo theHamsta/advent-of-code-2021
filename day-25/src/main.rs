@@ -1,7 +1,6 @@
 use std::mem::swap;
 
 use anyhow::Context;
-use rayon::prelude::*;
 
 #[derive(thiserror::Error, Debug)]
 enum AocError {
@@ -50,63 +49,50 @@ fn main() -> anyhow::Result<()> {
         //}
 
         let mut change = false;
-        change |= dst
-            .outer_iter_mut()
-            .into_par_iter()
-            .enumerate()
-            .map(|(y, mut dst)| {
-                let mut change = false;
-                dst.iter_mut().enumerate().for_each(|(x, dst)| {
-                    let center = src[(y, x)];
-                    let left = src[(y, (x + width - 1) % width)];
-                    let right = src[(y, (x + width + 1) % width)];
-                    *dst = match (center, left, right) {
-                        (b'.', b'>', _) => {
-                            change |= true;
-                            b'>'
-                        }
-                        (b'>', _, b'.') => {
-                            change |= true;
-                            b'.'
-                        }
-                        (c, _, _) => c,
+        for y in 0..height {
+            for x in 0..width {
+                let center = src[(y, x)];
+                let left = src[(y, (x + width - 1) % width)];
+                let right = src[(y, (x + width + 1) % width)];
+                dst[(y, x)] = match (center, left, right) {
+                    (b'.', b'>', _) => {
+                        change |= true;
+                        b'>'
                     }
-                });
-                change
-            })
-            .reduce(|| false, |a, b| a || b);
+                    (b'>', _, b'.') => {
+                        change |= true;
+                        b'.'
+                    }
+                    (c, _, _) => c,
+                }
+            }
+        }
         swap(&mut src, &mut dst);
-        dst.outer_iter_mut()
-            .into_par_iter()
-            .enumerate()
-            .map(|(y, mut dst)| {
-                let mut change = false;
-                dst.iter_mut().enumerate().for_each(|(x, dst)| {
-                    let center = src[(y, x)];
-                    let top = src[((y + height - 1) % height, x)];
-                    let bottom = src[((y + height + 1) % height, x)];
-                    *dst = match (center, top, bottom) {
-                        (b'.', b'v', _) => {
-                            change |= true;
-                            b'v'
-                        }
-                        (b'v', _, b'.') => {
-                            change |= true;
-                            b'.'
-                        }
-                        (c, _, _) => c,
+        for y in 0..height {
+            for x in 0..width {
+                let center = src[(y, x)];
+                let top = src[((y + height - 1) % height, x)];
+                let bottom = src[((y + height + 1) % height, x)];
+                dst[(y, x)] = match (center, top, bottom) {
+                    (b'.', b'v', _) => {
+                        change |= true;
+                        b'v'
                     }
-                });
-                change
-            })
-            .reduce(|| false, |a, b| a || b);
+                    (b'v', _, b'.') => {
+                        change |= true;
+                        b'.'
+                    }
+                    (c, _, _) => c,
+                }
+            }
+        }
         swap(&mut src, &mut dst);
         step += 1;
         if !change {
             break;
         }
     }
-    println!("Part1: {step}");
+    println!("{step}");
 
     Ok(())
 }
