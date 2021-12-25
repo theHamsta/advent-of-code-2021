@@ -30,7 +30,7 @@ fn main() -> anyhow::Result<()> {
         .enumerate()
         .for_each(|(y, l)| {
             l.as_bytes()
-                .into_iter()
+                .iter()
                 .filter(|&&c| c != b' ')
                 .enumerate()
                 .for_each(|(x, &c)| {
