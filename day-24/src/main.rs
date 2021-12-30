@@ -67,64 +67,63 @@ fn main() -> anyhow::Result<()> {
         .enumerate()
         .for_each(|(idx, &p)| {
             let n_threads = rayon::current_num_threads();
-            partial_solutions.push(
-                (0..n_threads)
-                    .into_par_iter()
-                    .map(|thread_id| {
-                        let mut partial_solution = HashMap::new();
-                        let bound = 26i64.pow(14 - idx as u32);
-                        (1..=9)
-                            .cartesian_product(
-                                if partial_solutions.is_empty() {
-                                    &just_zero
-                                } else {
-                                    &partial_solutions[partial_solutions.len() - 1]
-                                }
-                                .keys(),
-                            )
-                            //.progress_count(
-                                //if partial_solutions.is_empty() {
-                                    //&just_zero
-                                //} else {
-                                    //&partial_solutions[partial_solutions.len() - 1]
-                                //}
-                                //.len() as u64
-                                    //* 10,
-                            //)
-                            .skip(thread_id)
-                            .step_by(n_threads)
-                            .for_each(|(input, &z)| {
-                                // bound found on solution thread after solving this without it
-                                if z <= bound {
-                                    let interpreted = true;
-                                    let result = if interpreted {
-                                        let mut alu = Alu::default();
-                                        *alu.register_mut('z') = z;
-                                        *alu.register_mut('w') = input;
-                                        alu.run(p, &[input]).unwrap();
-                                        alu.register('z')
-                                    } else {
-                                        generated::prog(idx, input, z)
-                                    };
-                                    partial_solution
-                                        .entry(result)
-                                        .or_insert_with(|| Vec::new())
-                                        .push((input, z));
-                                }
-                            });
-                        partial_solution
-                    })
-                    .reduce(
-                        || HashMap::new(),
-                        |a, b| {
-                            let mut rtn = HashMap::new();
-                            for (k, v) in b.iter().chain(a.iter()) {
-                                rtn.entry(*k).or_insert_with(Vec::new).extend(v);
+            let mut partial_solution = HashMap::new();
+            let result: Vec<_> = (0..n_threads)
+                .into_par_iter()
+                .map(|thread_id| {
+                    let mut partial_solution = HashMap::new();
+                    let bound = 26i64.pow(14 - idx as u32);
+                    (1..=9)
+                        .cartesian_product(
+                            if partial_solutions.is_empty() {
+                                &just_zero
+                            } else {
+                                &partial_solutions[partial_solutions.len() - 1]
                             }
-                            rtn
-                        },
-                    ),
-            );
+                            .keys(),
+                        )
+                        //.progress_count(
+                        //if partial_solutions.is_empty() {
+                        //&just_zero
+                        //} else {
+                        //&partial_solutions[partial_solutions.len() - 1]
+                        //}
+                        //.len() as u64
+                        //* 10,
+                        //)
+                        .skip(thread_id)
+                        .step_by(n_threads)
+                        .for_each(|(input, &z)| {
+                            // bound found on solution thread after solving this without it
+                            if z <= bound {
+                                let interpreted = true;
+                                let result = if interpreted {
+                                    let mut alu = Alu::default();
+                                    *alu.register_mut('z') = z;
+                                    *alu.register_mut('w') = input;
+                                    alu.run(p, &[input]).unwrap();
+                                    alu.register('z')
+                                } else {
+                                    generated::prog(idx, input, z)
+                                };
+                                partial_solution
+                                    .entry(result)
+                                    .or_insert_with(|| Vec::new())
+                                    .push((input, z));
+                            }
+                        });
+                    partial_solution
+                })
+                .collect();
+            for map in result.iter() {
+                for (k, v) in map.iter() {
+                    partial_solution
+                        .entry(*k)
+                        .or_insert_with(Vec::new)
+                        .extend(v);
+                }
+            }
+            partial_solutions.push(partial_solution);
         });
 
     let part1 = solve_max(&partial_solutions, 0);
