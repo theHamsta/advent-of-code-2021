@@ -20,21 +20,20 @@ impl Op {
         match self {
             Op::Input(i) => format!("input{i}"),
             Op::Value(value) => format!("{value}"),
-            Op::Mod(_, _) => format!("%"),
-            Op::Div(_, _) => format!("/"),
-            Op::Add(_, _) => format!("+"),
-            Op::Mul(_, _) => format!("*"),
-            Op::Eql(_, _) => format!("="),
-            Op::Neql(_, _) => format!("!="),
-            Op::If(_, _) => format!("if"),
+            Op::Mod(_, _) => "%",
+            Op::Div(_, _) => "/",
+            Op::Add(_, _) => "+",
+            Op::Mul(_, _) => "*",
+            Op::Eql(_, _) => "=",
+            Op::Neql(_, _) => "!=",
+            Op::If(_, _) => "if",
         }
     }
 
     pub fn to_dot(&self) -> String {
         let mut nodes = HashSet::new();
         let mut edges = Vec::new();
-        let mut stack = Vec::new();
-        stack.push(self);
+        let mut stack = vec![self];
         while let Some(node) = stack.pop() {
             let label = node.type_string();
             if nodes.insert(format!("n{:p}[label=\"{label}\"]", node)) {
@@ -69,11 +68,11 @@ impl Op {
         rtn.push_str("digraph N {\n");
         for n in nodes {
             rtn.push_str(&n);
-            rtn.push_str("\n");
+            rtn.push('\n');
         }
         for e in edges {
             rtn.push_str(&e);
-            rtn.push_str("\n");
+            rtn.push('\n');
         }
         rtn.push_str("}\n");
         rtn

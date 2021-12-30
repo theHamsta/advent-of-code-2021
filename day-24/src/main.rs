@@ -99,7 +99,7 @@ fn main() -> anyhow::Result<()> {
                                 };
                                 partial_solution
                                     .entry(result)
-                                    .or_insert_with(|| Vec::new())
+                                    .or_insert_with(Vec::new)
                                     .push((input, z));
                             }
                         });
@@ -131,7 +131,7 @@ fn solve_max(partial_solutions: &[HashMap<i64, Vec<(i64, i64)>>], target: i64) -
         [rest @ .., last] => {
             let potential_solutions = &last.get(&target)?;
             potential_solutions
-                .into_iter()
+                .iter()
                 .flat_map(|&(input, previous)| Some(input + 10 * solve_max(rest, previous)?))
                 .max()
         }
@@ -144,7 +144,7 @@ fn solve_min(partial_solutions: &[HashMap<i64, Vec<(i64, i64)>>], target: i64) -
         [rest @ .., last] => {
             let potential_solutions = &last.get(&target)?;
             potential_solutions
-                .into_iter()
+                .iter()
                 .flat_map(|&(input, previous)| Some(input + 10 * solve_min(rest, previous)?))
                 .min()
         }

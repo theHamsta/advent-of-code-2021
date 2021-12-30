@@ -1,4 +1,4 @@
-use combine::parser::char::{digit, letter, newline, spaces};
+use combine::parser::char::{digit, letter, spaces};
 use combine::parser::range::range;
 use combine::parser::token::token;
 use combine::stream::{self, position};
@@ -35,7 +35,7 @@ where
 {
     let operand = || {
         choice((
-            letter().map(|c| Operand::Register(c)),
+            letter().map(Operand::Register),
             (optional(token('-')), many1(digit())).map(|(sign, digits): (Option<char>, String)| {
                 Operand::Literal(
                     format!("{}{}", if sign.is_some() { "-" } else { "" }, digits)
@@ -60,7 +60,7 @@ where
             .map(|(_, _, o1, _, o2)| Instruction::Eql(o1, o2)),
     ));
     Parser::map(
-        sep_by(optional(instruction), newline()),
+        sep_by(optional(instruction), spaces()),
         |f: Vec<Option<Instruction>>| f.into_iter().flatten().collect(),
     )
 }
