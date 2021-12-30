@@ -47,38 +47,45 @@ fn main() -> anyhow::Result<()> {
 
     let just_zero = hashmap! { 0i64 => vec![]};
     let mut partial_solutions = Vec::new();
-    subprograms.iter().progress().for_each(|p| {
-        let mut partial_solution = HashMap::new();
-        (1..=9)
-            .cartesian_product(
-                if partial_solutions.is_empty() {
-                    &just_zero
-                } else {
-                    &partial_solutions[partial_solutions.len() - 1]
-                }
-                .keys(),
-            )
-            .progress_count(
-                if partial_solutions.is_empty() {
-                    &just_zero
-                } else {
-                    &partial_solutions[partial_solutions.len() - 1]
-                }
-                .len() as u64
-                    * 10,
-            )
-            .for_each(|(input, &z)| {
-                let mut alu = Alu::default();
-                *alu.register_mut('z') = z;
-                *alu.register_mut('w') = input;
-                alu.run(p, &[input]).unwrap();
-                partial_solution
-                    .entry(alu.register('z'))
-                    .or_insert_with(|| Vec::new())
-                    .push((input, z));
-            });
-        partial_solutions.push(partial_solution);
-    });
+    subprograms
+        .iter()
+        .progress()
+        .enumerate()
+        .for_each(|(idx, &p)| {
+            let mut partial_solution = HashMap::new();
+            (1..=9)
+                .cartesian_product(
+                    if partial_solutions.is_empty() {
+                        &just_zero
+                    } else {
+                        &partial_solutions[partial_solutions.len() - 1]
+                    }
+                    .keys(),
+                )
+                .progress_count(
+                    if partial_solutions.is_empty() {
+                        &just_zero
+                    } else {
+                        &partial_solutions[partial_solutions.len() - 1]
+                    }
+                    .len() as u64
+                        * 10,
+                )
+                .for_each(|(input, &z)| {
+                    if z <= 26i64.pow(14 - idx as u32) {
+                        // bound found on solution thread after solving this without it
+                        let mut alu = Alu::default();
+                        *alu.register_mut('z') = z;
+                        *alu.register_mut('w') = input;
+                        alu.run(p, &[input]).unwrap();
+                        partial_solution
+                            .entry(alu.register('z'))
+                            .or_insert_with(|| Vec::new())
+                            .push((input, z));
+                    }
+                });
+            partial_solutions.push(partial_solution);
+        });
 
     let part1 = solve_max(&partial_solutions, 0);
     dbg!(&part1);
