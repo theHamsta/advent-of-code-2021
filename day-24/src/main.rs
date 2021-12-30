@@ -1,5 +1,4 @@
-use std::io::prelude::*;
-use std::{collections::HashMap, fs::File, rc::Rc};
+use std::{collections::HashMap, rc::Rc};
 
 use anyhow::Context;
 
