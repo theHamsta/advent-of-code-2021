@@ -1,9 +1,10 @@
-use combine::parser::char::{digit, letter, spaces};
+use combine::parser::char::{crlf, digit, letter, newline, spaces};
 use combine::parser::range::range;
 use combine::parser::token::token;
 use combine::stream::{self, position};
 use combine::{
-    choice, many1, optional, sep_by, EasyParser, ParseError, Parser, RangeStreamOnce, StreamOnce,
+    choice, many1, optional, satisfy, sep_by, EasyParser, ParseError, Parser, RangeStreamOnce,
+    StreamOnce,
 };
 
 use crate::AocError;
@@ -60,7 +61,10 @@ where
             .map(|(_, _, o1, _, o2)| Instruction::Eql(o1, o2)),
     ));
     Parser::map(
-        sep_by(optional(instruction), spaces()),
+        sep_by(
+            optional(instruction),
+            choice((newline(), satisfy(|c| c == '\r'), crlf())),
+        ),
         |f: Vec<Option<Instruction>>| f.into_iter().flatten().collect(),
     )
 }
