@@ -57,7 +57,7 @@ impl Alu {
     }
 
     pub fn symbolic_execution(
-        instructions: &Vec<Instruction>,
+        instructions: &[Instruction],
     ) -> anyhow::Result<HashMap<char, Rc<Op>>> {
         let mut input_counter = 0;
 

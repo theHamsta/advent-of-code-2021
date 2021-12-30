@@ -1,8 +1,10 @@
-use std::{collections::HashMap, rc::Rc};
+use std::io::prelude::*;
+use std::{collections::HashMap, fs::File, rc::Rc};
 
 use anyhow::Context;
 
 mod alu;
+mod generated;
 mod instruction;
 mod op;
 
@@ -45,6 +47,18 @@ fn main() -> anyhow::Result<()> {
         .collect_vec();
     assert_eq!(subprograms.len(), 14);
 
+    //let mut file = File::create("generated.rs")?;
+    //writeln!(file, "fn prog(prog_idx: usize, w: i64, z: i64) -> i64 {{");
+    //writeln!(file, "match prog_idx {{");
+    //for (idx, s) in subprograms.iter().enumerate() {
+    //let mut prog = vec![Instruction::Input('w'), Instruction::Input('z')];
+    //prog.extend_from_slice(s);
+    //writeln!(file, "{idx} =>");
+    //writeln!(file, "{},", Alu::symbolic_execution(&prog)?[&'z']);
+    //}
+    //writeln!(file, "}}");
+    //writeln!(file, "}}");
+
     let just_zero = hashmap! { 0i64 => vec![]};
     let mut partial_solutions = Vec::new();
     subprograms
@@ -73,14 +87,20 @@ fn main() -> anyhow::Result<()> {
                         * 10,
                 )
                 .for_each(|(input, &z)| {
+                    // bound found on solution thread after solving this without it
                     if z <= bound {
-                        // bound found on solution thread after solving this without it
-                        let mut alu = Alu::default();
-                        *alu.register_mut('z') = z;
-                        *alu.register_mut('w') = input;
-                        alu.run(p, &[input]).unwrap();
+                        let interpreted = true;
+                        let result = if interpreted {
+                            let mut alu = Alu::default();
+                            *alu.register_mut('z') = z;
+                            *alu.register_mut('w') = input;
+                            alu.run(p, &[input]).unwrap();
+                            alu.register('z')
+                        } else {
+                            generated::prog(idx, input, z)
+                        };
                         partial_solution
-                            .entry(alu.register('z'))
+                            .entry(result)
                             .or_insert_with(|| Vec::new())
                             .push((input, z));
                     }
