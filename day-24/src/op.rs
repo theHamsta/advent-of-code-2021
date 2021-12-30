@@ -20,13 +20,13 @@ impl Op {
         match self {
             Op::Input(i) => format!("input{i}"),
             Op::Value(value) => format!("{value}"),
-            Op::Mod(_, _) => "%",
-            Op::Div(_, _) => "/",
-            Op::Add(_, _) => "+",
-            Op::Mul(_, _) => "*",
-            Op::Eql(_, _) => "=",
-            Op::Neql(_, _) => "!=",
-            Op::If(_, _) => "if",
+            Op::Mod(_, _) => "%".to_owned(),
+            Op::Div(_, _) => "/".to_owned(),
+            Op::Add(_, _) => "+".to_owned(),
+            Op::Mul(_, _) => "*".to_owned(),
+            Op::Eql(_, _) => "=".to_owned(),
+            Op::Neql(_, _) => "!=".to_owned(),
+            Op::If(_, _) => "if".to_owned(),
         }
     }
 
