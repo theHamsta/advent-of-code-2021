@@ -53,6 +53,7 @@ fn main() -> anyhow::Result<()> {
         .enumerate()
         .for_each(|(idx, &p)| {
             let mut partial_solution = HashMap::new();
+            let bound = 26i64.pow(14 - idx as u32);
             (1..=9)
                 .cartesian_product(
                     if partial_solutions.is_empty() {
@@ -72,7 +73,7 @@ fn main() -> anyhow::Result<()> {
                         * 10,
                 )
                 .for_each(|(input, &z)| {
-                    if z <= 26i64.pow(14 - idx as u32) {
+                    if z <= bound {
                         // bound found on solution thread after solving this without it
                         let mut alu = Alu::default();
                         *alu.register_mut('z') = z;
