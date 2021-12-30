@@ -82,21 +82,12 @@ fn main() -> anyhow::Result<()> {
                             }
                             .keys(),
                         )
-                        //.progress_count(
-                        //if partial_solutions.is_empty() {
-                        //&just_zero
-                        //} else {
-                        //&partial_solutions[partial_solutions.len() - 1]
-                        //}
-                        //.len() as u64
-                        //* 10,
-                        //)
                         .skip(thread_id)
                         .step_by(n_threads)
                         .for_each(|(input, &z)| {
                             // bound found on solution thread after solving this without it
                             if z <= bound {
-                                let interpreted = true;
+                                let interpreted = false;
                                 let result = if interpreted {
                                     let mut alu = Alu::default();
                                     *alu.register_mut('z') = z;
