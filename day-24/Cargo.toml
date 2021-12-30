@@ -11,4 +11,5 @@ itertools = "0.10.1"
 thiserror = "1.0.30"
 combine = "4.6.2"
 maplit = "1.0.2"
-indicatif = { version = "0.16.2", features= ["rayon"] }
+rayon = "1.5.1"
+indicatif = { version = "0.16.2" }
