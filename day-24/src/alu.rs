@@ -44,6 +44,7 @@ impl Alu {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn reset(&mut self) {
         *self = Self::default();
     }
@@ -167,6 +168,7 @@ impl Alu {
     }
 
     /// Get a reference to the alu's registers.
+    #[allow(dead_code)]
     pub fn registers(&self) -> &HashMap<char, i64> {
         &self.registers
     }

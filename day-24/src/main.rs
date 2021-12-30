@@ -1,5 +1,4 @@
-#![allow(dead_code)]
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use anyhow::Context;
 
@@ -33,6 +32,13 @@ fn main() -> anyhow::Result<()> {
 
     let instructions = parse_instructions(&input)?;
 
+    if let Some(last) = std::env::args().last() {
+        if last == "--dot" {
+            let expression = Rc::clone(&Alu::symbolic_execution(&instructions)?[&'z']);
+            println!("{}", expression.to_dot());
+            return Ok(());
+        }
+    }
     let subprograms = instructions
         .split(|instr| matches!(instr, &Instruction::Input(_)))
         .filter(|p| !p.is_empty())
@@ -78,9 +84,6 @@ fn main() -> anyhow::Result<()> {
     dbg!(&part1);
     let part2 = solve_min(&partial_solutions, 0);
     dbg!(&part2);
-
-    //let expression = Rc::clone(&Alu::symbolic_execution(&instructions)?[&'z']);
-    //println!("{}", expression.to_dot());
 
     Ok(())
 }
@@ -159,15 +162,4 @@ mod tests {
         let expression = Alu::symbolic_execution(&instructions).unwrap();
         println!("{}", expression[&'w'].to_dot());
     }
-
-    //#[test]
-    //fn check_program() {
-    //let program = include_str!("../input");
-    //let instructions = parse(program).unwrap();
-    //let mut alu = Alu::default();
-    //const INPUT: [i64; 14] = [13, 15, 14, -4, -10, 11, 9, -12, 10, -11, 12, -1, 0, 11];
-    //alu.run(&instructions, &INPUT).unwrap();
-
-    //assert_eq!(alu.registers()[&'z'], mysterious_program(&INPUT));
-    //}
 }
